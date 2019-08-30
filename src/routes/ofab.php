@@ -18,12 +18,17 @@ function checkArticulo($articulo) {
         if ( $stmt->rowCount() == 0 ) {
 
             $db = null;
-            return false;
+            return 'notFound';
 
         } else {
             
+            $registro = $stmt->fetch(PDO::FETCH_ASSOC);
+            $grupo = $registro['grupo'] ;
+
+            //$respuesta = array('status' => 'TEST', 'GRUPO' => $grupo);
+            
             $db = null;
-            return true;
+            return $grupo;
         }
             
 
@@ -128,42 +133,46 @@ $app->post('/api/ofab', function(Request $request, Response $response, $args){
     $fecha_inicio = $request->getParsedBody()['fecha_inicio'];
     $observaciones = $request->getParsedBody()['observaciones'];
 
-    if( checkArticulo($articulo)) {
+    $grupo = checkArticulo($articulo);
+
+    if( $grupo != "notFound") {
 
         $query = "INSERT INTO orden_fabricacion  
-        (articulo, cantidad, maquina, molde, fecha_inicio, observaciones) 
+        (articulo, cantidad, maquina, molde, fecha_inicio, observaciones, grupo) 
         VALUES 
-        (:articulo, :cantidad, :maquina, :molde, :fecha_inicio, :observaciones) ";   
+        (:articulo, :cantidad, :maquina, :molde, :fecha_inicio, :observaciones, :grupo) ";   
 
-try {
-$db = new db();
-$db = $db->connect();
-    
-$stmt = $db->prepare($query);
+        try {
+            $db = new db();
+            $db = $db->connect();
+                
+            $stmt = $db->prepare($query);
 
-$stmt->bindParam(':articulo', $articulo);
-$stmt->bindParam(':cantidad', $cantidad);
-$stmt->bindParam(':maquina', $maquina);
-$stmt->bindParam(':molde', $molde);
-$stmt->bindParam(':fecha_inicio', $fecha_inicio);
-$stmt->bindParam(':observaciones', $observaciones);
+            $stmt->bindParam(':articulo', $articulo);
+            $stmt->bindParam(':cantidad', $cantidad);
+            $stmt->bindParam(':maquina', $maquina);
+            $stmt->bindParam(':molde', $molde);
+            $stmt->bindParam(':fecha_inicio', $fecha_inicio);
+            $stmt->bindParam(':observaciones', $observaciones);
 
-$stmt->execute();
+            $stmt->bindParam(':grupo', $grupo);
 
-$id = $db->lastInsertId();
-$db = null;
+            $stmt->execute();
 
-if($id > 0) { 
-    $respuesta = array('status' => 'ok', 'Insert ID' => $id, 'Orden de Fabricacion Agregada' => $id.' '.$articulo);
-}
+            $id = $db->lastInsertId();
+            $db = null;
 
-} catch (PDOException $e) {
-if ($e->errorInfo[1] == 1062) {
-    $respuesta = array('status' => 'failed', 'msg' => 'Ya existe la orden '.$id );
-} else {
-    $respuesta = array('status' => 'failed','error' => $e->errorInfo[1]);
-}
-}
+            if($id > 0) { 
+                $respuesta = array('status' => 'ok', 'Insert ID' => $id, 'Orden de Fabricacion Agregada' => $id.' '.$articulo);
+            }
+
+        } catch (PDOException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                $respuesta = array('status' => 'failed', 'msg' => 'Ya existe la orden '.$id );
+            } else {
+                $respuesta = array('status' => 'failed','error al insertar ofab' => $e->errorInfo[1], 'grupo' => $grupo);
+            }
+        }
 
 
     } else {

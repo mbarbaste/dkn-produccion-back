@@ -62,12 +62,15 @@ $app->post('/api/carga_formacion', function(Request $request, Response $response
     $cantidad = $request->getParsedBody()['cantidad'];
     $rotura = $request->getParsedBody()['rotura'];
     $fecha = $request->getParsedBody()['fecha'];
+
+    $maquina = $request->getParsedBody()['maquina'];
+    $grupo = $request->getParsedBody()['grupo'];
     
     
     $query = "INSERT INTO carga_formacion  
-                (articulo, cantidad, rotura, fecha, ofab_id) 
+                (articulo, cantidad, rotura, fecha, ofab_id, maquina, grupo) 
                 VALUES 
-                (:articulo, :cantidad, :rotura, :fecha, :ofab_id) ";   
+                (:articulo, :cantidad, :rotura, :fecha, :ofab_id, :maquina, :grupo) ";   
 
     try {
         $db = new db();
@@ -80,6 +83,9 @@ $app->post('/api/carga_formacion', function(Request $request, Response $response
         $stmt->bindParam(':rotura', $rotura);
         $stmt->bindParam(':fecha', $fecha);
         $stmt->bindParam(':ofab_id', $ofab_id);
+
+        $stmt->bindParam(':maquina', $maquina);
+        $stmt->bindParam(':grupo', $grupo);
 
         $stmt->execute();
 

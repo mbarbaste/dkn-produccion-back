@@ -1,0 +1,42 @@
+<?php 
+
+$mysqli = new mysqli('localhost', 'root', 'dr0p3smb', 'dolkin-prod');
+	
+	if($mysqli->connect_error){
+		
+		die('Error en la conexion' . $mysqli->connect_error);
+		
+	}
+
+function actualizar($articulo, $grupo) {
+
+    $conn = new mysqli('localhost', 'root', 'dr0p3smb', 'dolkin-prod');
+    
+    $query = "UPDATE articulos SET grupo = '".$grupo."' WHERE articulo='".$articulo."' LIMIT 1";
+
+    echo $query."\n\n";
+   
+    $conn->query($query);
+
+    $conn->close();
+}
+
+$sql = "SELECT * FROM articulo_grupo";
+
+$resultado = $mysqli->query($sql);
+
+$count = 0;
+
+while($row = $resultado->fetch_assoc()) 
+{
+    $articulo = $row['articulo'];
+    $grupo = $row['grupo'];
+    
+    actualizar($articulo, $grupo);
+
+    $count++;
+
+    
+}
+
+print "Registros Procesados: ".(string)$count; 

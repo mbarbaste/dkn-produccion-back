@@ -9,9 +9,12 @@ function descargaHornoAlta($oid, $primera, $segunda, $quinta, $descarte, $articu
     $cantidad_total = $primera + $segunda + $quinta + $descarte;
 
     // Actualizo ofab + revisacion / - horno_alta
+
+    // No debe tocar horna_alta
+    // quitado: horno_alta = horno_alta - ".$cantidad_total." 
+     
     $query = "UPDATE orden_fabricacion SET 
-                revisacion = revisacion + ".$cantidad_total.", 
-                horno_alta = horno_alta - ".$cantidad_total."  
+                revisacion = revisacion + ".$cantidad_total."                
                 WHERE id = ".$oid." LIMIT 1";
 
     $db = new db();
@@ -86,6 +89,9 @@ $app->post('/api/carga_revisacion', function(Request $request, Response $respons
     $segunda = $request->getParsedBody()['segunda'];
     $quinta = $request->getParsedBody()['quinta'];
     $descarte = $request->getParsedBody()['descarte'];
+    $horno = $request->getParsedBody()['horno'];
+
+    $grupo = $request->getParsedBody()['grupo'];
 
     $d01 = $request->getParsedBody()['d01'];
     $d02 = $request->getParsedBody()['d02'];
@@ -123,6 +129,8 @@ $app->post('/api/carga_revisacion', function(Request $request, Response $respons
                 segunda,
                 quinta,
                 dte,
+                horno,
+                grupo,
                 d01,
                 d02,
                 d03,
@@ -155,6 +163,8 @@ $app->post('/api/carga_revisacion', function(Request $request, Response $respons
                     :2da,
                     :5ta,
                     :dte,
+                    :horno,
+                    :grupo,
                     :d01,
                     :d02,
                     :d03,
@@ -195,6 +205,10 @@ $app->post('/api/carga_revisacion', function(Request $request, Response $respons
         $stmt->bindParam(':2da', $segunda);
         $stmt->bindParam(':5ta', $quinta);
         $stmt->bindParam(':dte', $descarte);
+
+        $stmt->bindParam(':horno', $horno);
+
+        $stmt->bindParam(':grupo', $grupo);
 
         $stmt->bindParam(':d01', $d01);
         $stmt->bindParam(':d02', $d02);
@@ -243,11 +257,7 @@ $app->post('/api/carga_revisacion', function(Request $request, Response $respons
         }
 
     } catch (PDOException $e) {
-        if ($e->errorInfo[1] == 1062) {
-            $respuesta = array('status' => 'failed', 'msg' => 'Ya existe la orden '.$id );
-        } else {
-            $respuesta = array('status' => 'failed','error' => $e->errorInfo);
-        }
+        $respuesta = array('status' => 'failed','error' => $e->errorInfo);
     }
 
     header("Content-Type: application/json");

@@ -22,8 +22,8 @@ $app->add(function ($req, $res, $next) {
 });
 
 
-// Customer Routes
-require '../src/routes/customers.php';
+// Routes
+//require '../src/routes/customers.php';
 require '../src/routes/users.php';
 require '../src/routes/ofab.php';
 require '../src/routes/carga_bizcocho.php';
@@ -34,5 +34,12 @@ require '../src/routes/revierte_formacion.php';
 require '../src/routes/revierte_bizcocho.php';
 require '../src/routes/revierte_horno_alta.php';
 require '../src/routes/carga_revisacion.php';
+require '../src/routes/revierte_revisacion.php';
+require '../src/routes/informe_revisacion.php';
+require '../src/routes/informe_formacion.php';
+require '../src/routes/informe_bizcocho.php';
+require '../src/routes/informe_horno_alta.php';
+require '../src/routes/precios.php';
+
 
 $app->run();

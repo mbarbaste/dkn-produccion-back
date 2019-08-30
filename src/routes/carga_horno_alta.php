@@ -4,7 +4,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 function actualizaOfabBlanco($oid, $cantid) {
 
-    $query = "UPDATE orden_fabricacion SET blanco = blanco + ".$cantid." WHERE id = ".$oid;
+    $query = "UPDATE orden_fabricacion SET horno_alta = horno_alta + ".$cantid." WHERE id = '".$oid."' LIMIT 1";
 
     $db = new db();
     $db = $db->connect();
@@ -41,7 +41,7 @@ function descargaStockBizcocho($articulo, $cantidad, $rotura) {
         $stmt = $db->prepare($query);    
         $stmt->execute();
 
-        $query = "UPDATE articulos SET stock_blanco = stock_blanco + ".$cantidad." WHERE articulo = '".$articulo."' LIMIT 1";
+        $query = "UPDATE articulos SET stock_horno_alta = stock_horno_alta + ".$cantidad." WHERE articulo = '".$articulo."' LIMIT 1";
         $stmt = $db->prepare($query);    
         $stmt->execute();
 
@@ -81,12 +81,14 @@ $app->post('/api/carga_horno_alta', function(Request $request, Response $respons
     $rotura = $request->getParsedBody()['rotura'];
     $fecha = $request->getParsedBody()['fecha'];
     $horno = $request->getParsedBody()['horno'];
+
+    $grupo = $request->getParsedBody()['grupo'];
     
     
     $query = "INSERT INTO carga_horno_alta  
-                (articulo, cantidad, rotura, fecha, ofab_id, horno) 
+                (articulo, cantidad, rotura, fecha, ofab_id, horno, grupo) 
                 VALUES 
-                (:articulo, :cantidad, :rotura, :fecha, :ofab_id, :horno) ";   
+                (:articulo, :cantidad, :rotura, :fecha, :ofab_id, :horno, :grupo) ";   
 
     try {
         $db = new db();
@@ -101,6 +103,8 @@ $app->post('/api/carga_horno_alta', function(Request $request, Response $respons
         $stmt->bindParam(':ofab_id', $ofab_id);
         $stmt->bindParam(':horno', $horno);
 
+        $stmt->bindParam(':grupo', $grupo);
+
         $stmt->execute();
 
         $id = $db->lastInsertId();
@@ -111,7 +115,6 @@ $app->post('/api/carga_horno_alta', function(Request $request, Response $respons
             $salidaBizcocho = $cantidad + $rotura;
 
             actualizaOfabBlanco($ofab_id, $cantidad);           
-            // descargaStockBizcocho($articulo, $salidaBizcocho);
             descargaStockBizcocho($articulo, $cantidad, $rotura);
 
             $respuesta = array('status' => 'ok', 'Insert ID' => $id, 'Carga de Horno de Alta Agregada' => $id.' '.$articulo);
