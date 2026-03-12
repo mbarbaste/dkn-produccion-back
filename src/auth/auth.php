@@ -1,4 +1,8 @@
 <?php
+require_once __DIR__ . '/../../vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../..');
+$dotenv->load();
+
 $auth = function ($request, $response, $next) {
 
     $token = $request->getHeaderLine('HTTP_TOKEN');
@@ -6,7 +10,6 @@ $auth = function ($request, $response, $next) {
     $permitir = token_check($token);
 
     if($permitir) {
-        // $response->getBody()->write($token);
         $response = $next($request, $response);
     } else {
         
@@ -24,7 +27,7 @@ function token($u, $i, $s) {
     $id = $i;
     $server = $s;
 
-    $key = 'BobEsponjaSpa2017';
+    $key = $_ENV['JWT_KEY'];
 
     $header = [
         'typ' => 'JWT',
@@ -62,13 +65,6 @@ function token_check($token_received) {
     $data = base64_decode($payload);
     $data = json_decode($data, true);
 
-    /*
-    if (!in_array($data['server'], $sites)) {
-        $token_received = [];
-        return false;
-    }
-    */
-    
     if($token_received === token($data['user'], $data['id'], $data['server'])) {
         return true;
     } else {
