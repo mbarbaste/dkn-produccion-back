@@ -2,7 +2,7 @@
 
 function getGrupos() {
 
-    $conn = new mysqli('localhost', 'root', 'dr0p3smb', 'dolkin-prod');
+    $conn = new mysqli('localhost', 'root', 'xXxXxXx', 'dolkin-prod');
 
     $query = "SELECT * FROM articulos_grupos_nuevo";
 
