@@ -10,7 +10,7 @@ $mysqli = new mysqli('localhost', 'root', 'dr0p3smb', 'dolkin-prod');
 
 function actualizar($articulo, $grupo) {
 
-    $conn = new mysqli('localhost', 'root', 'dr0p3smb', 'dolkin-prod');
+    $conn = new mysqli('localhost', 'root', 'xXxXxXx, 'dolkin-prod');
     
     $query = "UPDATE articulos SET grupo = '".$grupo."' WHERE articulo='".$articulo."' LIMIT 1";
 
