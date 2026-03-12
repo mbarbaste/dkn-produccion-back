@@ -3,7 +3,7 @@
         // Properties
         private $dbhost = 'localhost';
         private $dbuser = 'root';
-        private $dbpass = 'dr0p3smb';
+        private $dbpass = 'xXxXxX';
 
         // Test DB
         private $dbname = 'dolkin-prod-testing';
